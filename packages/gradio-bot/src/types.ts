@@ -7,6 +7,10 @@ import type {
 	SlashCommandSubcommandBuilder,
 } from "discord.js";
 
+export interface AdaptOptions {
+	ignores?: string[];
+}
+
 export interface CommandDecoratorOption {
 	required?: boolean;
 	localizations?: LocalizationMap;
