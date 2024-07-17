@@ -20,12 +20,14 @@ if (!ID || !TOKEN) {
 
 const spaces = process.argv.slice(2);
 if (spaces.length === 0) {
-	console.error("Please provide at least one valid Gradio space.");
-	console.error("Usage   : gradio-bot '<space>'");
-	console.error(
+	console.warn(
+		"No spaces are pre-configured by command line arguments. Please use the management command.",
+	);
+	console.warn("To pre-configure spaces, provide the space names as arguments.");
+	console.warn("Usage   : gradio-bot '<space>'");
+	console.warn(
 		"Example : gradio-bot 'stabilityai/stable-diffusion-3-medium' 'hf-audio/whisper-large-v3' 'parler-tts/parler_tts_mini'",
 	);
-	process.exit(1);
 }
 
 process.on("unhandledRejection", (error) => {
