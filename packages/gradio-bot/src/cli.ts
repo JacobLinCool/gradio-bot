@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Client, OAuth2Scopes } from "discord.js";
 import { config } from "dotenv";
 import { GradioBot } from "./bot";
