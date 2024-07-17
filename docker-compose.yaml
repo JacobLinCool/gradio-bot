@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+    bot:
+        build: .
+        image: jacoblincool/gradio-bot
+        env_file:
+            - .env
+        command: ["hf-audio/whisper-large-v3", "parler-tts/parler_tts_mini"]
