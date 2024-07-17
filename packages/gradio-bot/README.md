@@ -117,3 +117,5 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 ```
+
+> Checkout the [example-bot](./packages/example-bot) for a 50-line multi-space bot!
