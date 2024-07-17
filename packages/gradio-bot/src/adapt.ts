@@ -13,8 +13,21 @@ export async function adapt(
 
 	const adapters: Record<string, CommandAdapter> = {};
 	for (const endpoint in apiInfo.named_endpoints) {
-		const commandName = normalizeName(endpoint);
+		let commandName = normalizeName(endpoint);
 		if (options?.ignores?.includes(commandName)) {
+			continue;
+		}
+
+		if (commandName.length > 32) {
+			if (options?.trimmer) {
+				commandName = options.trimmer(commandName);
+			} else {
+				commandName = commandName.slice(0, 32);
+			}
+		}
+
+		if (adapters[commandName]) {
+			console.error(`Duplicate command name: ${commandName}, skipping.`);
 			continue;
 		}
 

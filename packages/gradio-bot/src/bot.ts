@@ -22,7 +22,9 @@ export class GradioBot extends SlashCommandBuilder {
 		this.bot = bot;
 		this.commands = commands;
 		this.setName(normalizeName(gr.config?.space_id?.split("/")[1]?.slice(0, 32) || "gradio"));
-		this.setDescription(`Gradio Bot from ${this.gr.config?.space_id || "Private App"}`);
+		this.setDescription(
+			`Gradio Bot from ${this.gr.config?.space_id || "Private App"}`.slice(0, 100),
+		);
 		this.commands.decorate(this);
 	}
 
@@ -86,7 +88,10 @@ export class GradioBot extends SlashCommandBuilder {
 				.filter((output) => typeof output === "string" || typeof output === "number")
 				.join("\n");
 			const files = await makeAttachments(outputs);
-			await interaction.editReply({ content, files });
+			await interaction.editReply({ content, files: files.splice(0, 10) });
+			while (files.length) {
+				await interaction.followUp({ files: files.splice(0, 10) });
+			}
 		} catch (e) {
 			if (e && typeof e === "object" && "message" in e) {
 				const message = `Error: ${e.message}`;

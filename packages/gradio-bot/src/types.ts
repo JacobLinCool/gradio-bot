@@ -9,6 +9,7 @@ import type {
 
 export interface AdaptOptions {
 	ignores?: string[];
+	trimmer?: (name: string) => string;
 }
 
 export interface CommandDecoratorOption {
