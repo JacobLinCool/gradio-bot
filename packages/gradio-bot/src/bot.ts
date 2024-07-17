@@ -76,7 +76,8 @@ export class GradioBot extends SlashCommandBuilder {
 			const result = await this.gr.predict(route, data);
 
 			// @ts-expect-error
-			if (result.data?.status === "error") {
+			if (result.stage === "error") {
+				console.error("An error occurred while processing the command.", result);
 				await interaction.editReply("An error occurred while processing the command.");
 			}
 
@@ -86,8 +87,15 @@ export class GradioBot extends SlashCommandBuilder {
 				.join("\n");
 			const files = await makeAttachments(outputs);
 			await interaction.editReply({ content, files });
-		} catch {
-			await interaction.followUp("An error occurred while processing the command.");
+		} catch (e) {
+			if (e && typeof e === "object" && "message" in e) {
+				const message = `Error: ${e.message}`;
+				console.error(message);
+				await interaction.followUp(message);
+			} else {
+				console.error("An error occurred while processing the command.", e);
+				await interaction.followUp("An error occurred while processing the command.");
+			}
 		}
 
 		return true;

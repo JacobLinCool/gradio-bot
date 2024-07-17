@@ -1,0 +1,25 @@
+{
+	"private": true,
+	"name": "example-bot",
+	"type": "module",
+	"scripts": {
+		"start": "tsx src/index.ts"
+	},
+	"dependencies": {
+		"discord.js": "^14.0.0",
+		"dotenv": "^16.4.5",
+		"gradio-bot": "workspace:*"
+	},
+	"devDependencies": {
+		"tsx": "^4.16.2",
+		"typescript": "^5.5.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JacobLinCool/gradio-bot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/JacobLinCool/gradio-bot/issues"
+	},
+	"homepage": "https://jacoblincool.github.io/gradio-bot"
+}
