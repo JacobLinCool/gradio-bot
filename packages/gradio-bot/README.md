@@ -47,6 +47,14 @@ File uploads are also supported! 🎉
 
 ![file](./images/file.png)
 
+### Dynamic Management
+
+You can also dynamically manage the spaces by using the `management` commands:
+
+- `management list`: List all the spaces that the bot is currently serving.
+- `management add`: Add a new space to the bot.
+- `management remove`: Remove a space from the bot.
+
 ## API Usage
 
 ### As a standalone bot
