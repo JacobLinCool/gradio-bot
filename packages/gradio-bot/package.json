@@ -1,0 +1,53 @@
+{
+	"name": "gradio-bot",
+	"description": "Turn any Hugging Face Space or Gradio application into a discord.js bot.",
+	"version": "0.1.0",
+	"author": "JacobLinCool <jacoblincool@gmail.com> (https://jacoblin.cool)",
+	"license": "MIT",
+	"keywords": [
+		"gradio",
+		"discord",
+		"bot",
+		"huggingface"
+	],
+	"type": "module",
+	"bin": {
+		"gradio-bot": "dist/cli.js"
+	},
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup",
+		"build:docs": "typedoc --out docs src"
+	},
+	"dependencies": {
+		"@gradio/client": "^1.0.0",
+		"discord.js": "^14.0.0",
+		"dotenv": "^16.4.5"
+	},
+	"devDependencies": {
+		"@swc/core": "^1.6.13",
+		"tsup": "^8.1.1",
+		"typedoc": "^0.26.4",
+		"typescript": "^5.5.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JacobLinCool/gradio-bot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/JacobLinCool/gradio-bot/issues"
+	},
+	"homepage": "https://jacoblincool.github.io/gradio-bot"
+}

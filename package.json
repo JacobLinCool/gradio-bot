@@ -1,0 +1,42 @@
+{
+	"private": true,
+	"name": "gradio-bot-monorepo",
+	"author": "JacobLinCool <jacoblincool@gmail.com> (https://jacoblin.cool)",
+	"license": "MIT",
+	"scripts": {
+		"prepare": "husky",
+		"format": "prettier --write --ignore-path .gitignore .",
+		"test": "vitest",
+		"changeset": "changeset",
+		"build:docs": "typedoc --out docs"
+	},
+	"devDependencies": {
+		"@changesets/changelog-github": "^0.5.0",
+		"@changesets/cli": "^2.27.7",
+		"@types/node": "^20.14.11",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.7",
+		"prettier": "^3.3.3",
+		"prettier-plugin-organize-imports": "^3.2.4",
+		"serve": "^14.2.3",
+		"tsup": "^8.1.1",
+		"tsx": "^4.16.2",
+		"typedoc": "^0.26.4",
+		"typescript": "^5.5.3",
+		"vitest": "^2.0.3"
+	},
+	"lint-staged": {
+		"*.{ts,js,json,yaml,yml}": [
+			"prettier --write"
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JacobLinCool/gradio-bot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/JacobLinCool/gradio-bot/issues"
+	},
+	"homepage": "https://jacoblincool.github.io/gradio-bot",
+	"packageManager": "pnpm@9.5.0"
+}
