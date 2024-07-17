@@ -15,7 +15,7 @@ export class CommandAdapter {
 	private parameterMapping: Map<
 		string,
 		[
-			"string" | "integer" | "number" | "boolean" | "attachment",
+			"string" | "integer" | "number" | "boolean" | "array" | "attachment",
 			string,
 			number,
 			GradioComponentMeta | undefined,
@@ -156,6 +156,26 @@ export class CommandAdapter {
 					});
 					break;
 				}
+				case "array": {
+					// @ts-expect-error
+					builder = builder.addStringOption((option) => {
+						option = option.setName(name).setDescription(description);
+						const choices = parseChoice(param.python_type.type);
+						if (choices) {
+							option = option.setDescription(
+								`${description} (${choices.join(", ")})`.slice(0, 100),
+							);
+						}
+						if (opt?.required) {
+							option = option.setRequired(true);
+						}
+						if (opt?.localizations) {
+							option = option.setDescriptionLocalizations(opt.localizations);
+						}
+						return option;
+					});
+					break;
+				}
 			}
 		}
 
@@ -217,6 +237,32 @@ export class CommandAdapter {
 						} else {
 							named_data[paramName] = handle_file(attachment.url);
 						}
+					}
+					break;
+				}
+				case "array": {
+					let value = (interaction.options
+						.getString(name, false)
+						?.split(",")
+						.map((x) => x.trim()) ?? fallback) as (string | number)[];
+					if (value.every((x) => !isNaN(Number(x)))) {
+						value = value.map((x) => Number(x));
+					}
+
+					let choices: (string | number)[] | undefined = parseChoice(
+						this.info.parameters[i].python_type.type,
+					);
+					if (choices && choices.every((x) => !isNaN(Number(x)))) {
+						choices = choices.map((x) => Number(x));
+					}
+					if (choices && value.some((x) => !choices.includes(x))) {
+						throw new Error(`Invalid choice for parameter "${name}"`);
+					}
+
+					if (this.callAsArray) {
+						data[i] = value;
+					} else {
+						named_data[paramName] = value;
 					}
 					break;
 				}

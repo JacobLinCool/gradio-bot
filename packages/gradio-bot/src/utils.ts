@@ -33,7 +33,10 @@ export function paramType(param: GradioEndpointInfo["parameters"][number]) {
 	if (param.component === "File" || param.component === "Audio" || param.component === "Image") {
 		return "attachment";
 	}
-	throw new Error(`Unsupported parameter type "${param.type}"`);
+	if (param.component === "Checkboxgroup" || param.component === "Dropdown") {
+		return "array";
+	}
+	throw new Error(`Unsupported parameter type "${param.type}" (${param.component})`);
 }
 
 export async function makeAttachments(obj: unknown, proxy?: string): Promise<AttachmentBuilder[]> {
@@ -66,7 +69,7 @@ export async function makeAttachments(obj: unknown, proxy?: string): Promise<Att
 				url = file.url;
 			}
 			const response = await fetch(url);
-			const name = file.orig_name || `file.${file.mime_type}`;
+			const name = file.orig_name || file.url.split("/")?.pop() || `file.${file.mime_type}`;
 			const buffer = Buffer.from(await response.arrayBuffer());
 			return new AttachmentBuilder(buffer, { name });
 		}),
