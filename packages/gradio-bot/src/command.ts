@@ -65,6 +65,9 @@ export class CommandAdapter {
 
 			const opt = options?.[name];
 
+			// some old endpoints do not have this field
+			const required = opt?.required ?? param.parameter_has_default === false;
+
 			switch (type) {
 				case "string": {
 					// @ts-expect-error
@@ -76,9 +79,7 @@ export class CommandAdapter {
 								...choices.map((choice) => ({ name: choice, value: choice })),
 							);
 						}
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -90,9 +91,7 @@ export class CommandAdapter {
 					// @ts-expect-error
 					builder = builder.addIntegerOption((option) => {
 						option = option.setName(name).setDescription(description);
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -111,9 +110,7 @@ export class CommandAdapter {
 					// @ts-expect-error
 					builder = builder.addNumberOption((option) => {
 						option = option.setName(name).setDescription(description);
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -132,9 +129,7 @@ export class CommandAdapter {
 					// @ts-expect-error
 					builder = builder.addBooleanOption((option) => {
 						option = option.setName(name).setDescription(description);
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -146,9 +141,7 @@ export class CommandAdapter {
 					// @ts-expect-error
 					builder = builder.addAttachmentOption((option) => {
 						option = option.setName(name).setDescription(description);
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -166,9 +159,7 @@ export class CommandAdapter {
 								`${description} (${choices.join(", ")})`.slice(0, 100),
 							);
 						}
-						if (opt?.required) {
-							option = option.setRequired(true);
-						}
+						option = option.setRequired(required);
 						if (opt?.localizations) {
 							option = option.setDescriptionLocalizations(opt.localizations);
 						}
@@ -178,6 +169,16 @@ export class CommandAdapter {
 				}
 			}
 		}
+
+		// hoist required options to the top
+		builder.options.sort((a, b) => {
+			const aRequired = a.toJSON().required ?? false;
+			const bRequired = b.toJSON().required ?? false;
+			if (aRequired === bRequired) {
+				return 0;
+			}
+			return aRequired ? -1 : 1;
+		});
 
 		return builder as unknown as typeof builder extends SlashCommandBuilder
 			? SlashCommandOptionsOnlyBuilder
