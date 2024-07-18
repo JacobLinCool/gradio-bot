@@ -8,6 +8,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import { config } from "dotenv";
+import { createServer } from "http";
 import { GradioBot } from "./bot";
 
 config();
@@ -70,6 +71,18 @@ async function main() {
 	});
 
 	client.login(TOKEN);
+
+	if (process.env.SPACE_ID) {
+		const server = createServer((req, res) => {
+			res.writeHead(200, { "Content-Type": "text/plain" });
+			const link = client.generateInvite({ scopes: [OAuth2Scopes.ApplicationsCommands] });
+			const spaces = gbs.map((gb) => gb.gr.config?.space_id).join(", ");
+			const content = `Invite Link: ${link}\nConnected Spaces: ${spaces}\n`;
+			res.end(content);
+		});
+		server.listen(process.env.PORT || 7860);
+		console.log("Server running on port", process.env.PORT || 7860);
+	}
 }
 
 async function register(gbs: GradioBot[]) {
