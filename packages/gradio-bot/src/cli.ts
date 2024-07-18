@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { Client as GradioClient } from "@gradio/client";
 import {
 	ChatInputCommandInteraction,
 	Client,
@@ -40,6 +41,10 @@ main();
 async function main() {
 	const gbs = await Promise.all(spaces.map((space) => GradioBot.from(space)));
 
+	// Setup token borrower to prevent problem of https://www.gradio.app/docs/python-client/using-zero-gpu-spaces
+	const borrower = await TokenBorrower.create(process.env.TOKEN_BORROWER);
+	gbs.forEach((gb) => borrower.decorate(gb.gr));
+
 	await register(gbs);
 
 	const client = new Client({ intents: [] });
@@ -56,7 +61,7 @@ async function main() {
 		}
 
 		if (interaction.commandName === "management") {
-			await handleManagement(interaction, gbs);
+			await handleManagement(interaction, gbs, borrower);
 			return;
 		}
 
@@ -122,7 +127,11 @@ function management(gbs: GradioBot[]) {
 	return builder;
 }
 
-async function handleManagement(interaction: ChatInputCommandInteraction, gbs: GradioBot[]) {
+async function handleManagement(
+	interaction: ChatInputCommandInteraction,
+	gbs: GradioBot[],
+	borrower: TokenBorrower,
+) {
 	await interaction.deferReply({ ephemeral: true });
 
 	try {
@@ -141,6 +150,7 @@ async function handleManagement(interaction: ChatInputCommandInteraction, gbs: G
 		if (sub === "add") {
 			const space = interaction.options.getString("space", true);
 			const gb = await GradioBot.from(space);
+			borrower.decorate(gb.gr);
 			gbs.push(gb);
 			await register(gbs);
 			await interaction.followUp(`Space ${space} added`);
@@ -163,5 +173,61 @@ async function handleManagement(interaction: ChatInputCommandInteraction, gbs: G
 	} catch (error) {
 		console.error(error);
 		await interaction.followUp("An error occurred");
+	}
+}
+
+class TokenBorrower {
+	constructor(private gr?: GradioClient) {}
+
+	static async create(proxy?: string): Promise<TokenBorrower> {
+		const gr = proxy ? await GradioClient.connect(proxy) : undefined;
+		return new TokenBorrower(gr);
+	}
+
+	decorate(gr: GradioClient): void {
+		if (!this.gr) {
+			return;
+		}
+
+		// @ts-expect-error
+		if (gr.__token_borrower__) {
+			return;
+		}
+
+		gr.fetch = (
+			(f) =>
+			async (...args: Parameters<typeof f>) => {
+				if (!this.gr) {
+					return f(...args);
+				}
+
+				if (!args[1]) {
+					args[1] = {};
+				}
+
+				if (!args[1].headers) {
+					args[1].headers = {};
+				}
+
+				try {
+					const res = await this.gr.predict("/predict", []);
+					const [token] = res.data as [string];
+					if (token) {
+						if (args[1].headers instanceof Headers) {
+							args[1].headers.set("X-IP-Token", token);
+						} else if (Array.isArray(args[1].headers)) {
+							args[1].headers.push(["X-IP-Token", token]);
+						} else {
+							args[1].headers["X-IP-Token"] = token;
+						}
+					}
+				} catch {}
+
+				return f(...args);
+			}
+		)(gr.fetch.bind(gr));
+
+		// @ts-expect-error
+		gr.__token_borrower__ = true;
 	}
 }
