@@ -9,6 +9,11 @@ export function normalizeName(name: string) {
 }
 
 export function parseChoice(pythonType: string): string[] | undefined {
+	const matchList = pythonType.match(/^List\[(.*)\]$/);
+	if (matchList) {
+		pythonType = matchList[1];
+	}
+
 	const match = pythonType.match(/^Literal\['(.*)'\]$/);
 	if (!match) {
 		return undefined;
