@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { adapt } from "./adapt";
 import { CommandsAdapter } from "./commands";
+import type { AdaptOptions } from "./types";
 import { makeAttachments, normalizeName } from "./utils";
 
 export class GradioBot extends SlashCommandBuilder {
@@ -28,9 +29,13 @@ export class GradioBot extends SlashCommandBuilder {
 		this.commands.decorate(this);
 	}
 
-	static async from(gr: string | GradioClient, bot?: DiscordClient): Promise<GradioBot> {
+	static async from(
+		gr: string | GradioClient,
+		bot?: DiscordClient,
+		options?: AdaptOptions,
+	): Promise<GradioBot> {
 		gr = typeof gr === "string" ? await GradioClient.connect(gr) : gr;
-		const adapters = await adapt(gr);
+		const adapters = await adapt(gr, options);
 		const commands = new CommandsAdapter(adapters);
 		return new GradioBot(commands, gr, bot);
 	}

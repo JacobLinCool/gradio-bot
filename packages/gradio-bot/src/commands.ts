@@ -1,5 +1,6 @@
 import type { ChatInputCommandInteraction, SlashCommandSubcommandsOnlyBuilder } from "discord.js";
 import type { CommandAdapter } from "./command";
+import type { CommandDecoratorOption } from "./types";
 
 export class CommandsAdapter {
 	public readonly adapters: Record<string, CommandAdapter>;
@@ -10,12 +11,13 @@ export class CommandsAdapter {
 
 	public decorate(
 		builder: SlashCommandSubcommandsOnlyBuilder,
+		options?: Record<string, Record<string, CommandDecoratorOption>>,
 	): SlashCommandSubcommandsOnlyBuilder {
 		for (const commandName in this.adapters) {
 			const adapter = this.adapters[commandName];
 			builder = builder.addSubcommand((builder) => {
 				builder = builder.setName(commandName).setDescription(commandName);
-				return adapter.decorate(builder);
+				return adapter.decorate(builder, options?.[commandName]);
 			});
 		}
 
