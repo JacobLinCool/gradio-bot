@@ -29,6 +29,12 @@ export class GradioBot extends SlashCommandBuilder {
 		this.commands.decorate(this);
 	}
 
+	/**
+	 * Creates a new instance of GradioBot from a Gradio Client instance, Hugging Face Space, or a Gradio server URL.
+	 * @param gr - The Gradio Client instance, Hugging Face Spaces, or the Gradio server URL.
+	 * @param bot - The Discord Client instance used to register and respond to commands.
+	 * @param options - The options for adapting the Gradio API.
+	 */
 	static async from(
 		gr: string | GradioClient,
 		bot?: DiscordClient,
@@ -71,6 +77,12 @@ export class GradioBot extends SlashCommandBuilder {
 		return this.bot.login(token);
 	}
 
+	/**
+	 * Handles and responds to the given ChatInputCommandInteraction.
+	 *
+	 * @param interaction - The ChatInputCommandInteraction.
+	 * @returns A boolean indicating whether the interaction was handled by this function.
+	 */
 	public async handle(interaction: ChatInputCommandInteraction) {
 		if (interaction.commandName !== this.name) {
 			return false;
@@ -111,6 +123,12 @@ export class GradioBot extends SlashCommandBuilder {
 		return true;
 	}
 
+	/**
+	 * Parses the given ChatInputCommandInteraction.
+	 *
+	 * @param interaction - The ChatInputCommandInteraction to parse.
+	 * @returns The route and payload to send to the Gradio endpoint.
+	 */
 	public parse(interaction: ChatInputCommandInteraction) {
 		return this.commands.parse(interaction);
 	}
