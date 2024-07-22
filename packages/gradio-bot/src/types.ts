@@ -7,7 +7,9 @@ import type {
 	SlashCommandSubcommandBuilder,
 } from "discord.js";
 
-export interface AdaptOptions {
+type GradioOptions = Client["options"];
+
+export interface AdaptOptions extends GradioOptions {
 	ignores?: string[];
 	trimmer?: (name: string) => string;
 }

@@ -40,7 +40,7 @@ export class GradioBot extends SlashCommandBuilder {
 		bot?: DiscordClient,
 		options?: AdaptOptions,
 	): Promise<GradioBot> {
-		gr = typeof gr === "string" ? await GradioClient.connect(gr) : gr;
+		gr = typeof gr === "string" ? await GradioClient.connect(gr, options) : gr;
 		const adapters = await adapt(gr, options);
 		const commands = new CommandsAdapter(adapters);
 		return new GradioBot(commands, gr, bot);
@@ -92,15 +92,49 @@ export class GradioBot extends SlashCommandBuilder {
 		try {
 			const { route, data } = this.parse(interaction);
 			console.log(`Calling Gradio endpoint "${route}" with data:`, data);
-			const result = await this.gr.predict(route, data);
-
-			// @ts-expect-error
-			if (result.stage === "error") {
-				console.error("An error occurred while processing the command.", result);
-				await interaction.editReply("An error occurred while processing the command.");
+			const prediction = this.gr.submit(route, data, undefined, undefined, true);
+			let outputs: unknown[] = [],
+				msgBuffer = "",
+				lastSent = Date.now(),
+				error = false;
+			for await (const event of prediction) {
+				if (event.type === "data") {
+					outputs = event.data;
+					break;
+				} else if (event.type === "log") {
+					msgBuffer = event.log;
+				} else if (event.type === "status") {
+					if (event.stage === "error") {
+						console.error(event);
+						msgBuffer = `Error: ${event.message}`;
+						error = true;
+						break;
+					} else if (event.progress_data?.length) {
+						msgBuffer =
+							"*Running*\n" +
+								event.progress_data
+									.map((p) => {
+										if (!p.index) return "";
+										if (p.length)
+											return `**${p.index} / ${p.length}** ${p.unit || ""}`;
+										return `**${p.index}** ${p.unit || ""}`;
+									})
+									.join("\n") || "";
+					}
+				}
+				if (msgBuffer && Date.now() - lastSent > 5000) {
+					await interaction.editReply(msgBuffer);
+					msgBuffer = "";
+					lastSent = Date.now();
+				}
 			}
 
-			const outputs = result.data as unknown[];
+			console.log("Outputs:", outputs, "Error:", error);
+			if (error) {
+				await interaction.editReply(msgBuffer);
+				return true;
+			}
+
 			const content = outputs
 				.filter((output) => typeof output === "string" || typeof output === "number")
 				.join("\n");
