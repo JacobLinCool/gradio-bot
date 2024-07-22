@@ -31,6 +31,8 @@ gradio-bot 'user/repo'
 
 The bot will automatically register the commands and start running.
 
+> You can also pre-configure the spaces by setting the `SPACES` environment variable like 'user/repo1,user/repo2'.
+
 ### Example
 
 ```bash
@@ -54,6 +56,20 @@ You can also dynamically manage the spaces by using the `management` commands:
 - `management list`: List all the spaces that the bot is currently serving.
 - `management add`: Add a new space to the bot.
 - `management remove`: Remove a space from the bot.
+
+> Dynamic management can be disabled by setting the `DISABLE_MANAGEMENT` environment variable to non-empty.
+
+### Options
+
+Use `--help` to see all the available options:
+
+```bash
+gradio-bot --help
+```
+
+Some of the options include:
+
+- `--hf-token` (`HF_TOKEN`): The Hugging Face API token to use.
 
 ## API Usage
 
