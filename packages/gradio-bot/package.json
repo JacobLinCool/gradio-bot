@@ -1,7 +1,7 @@
 {
 	"name": "gradio-bot",
 	"description": "Turn any Hugging Face Space or Gradio application into a discord.js bot.",
-	"version": "0.1.7",
+	"version": "0.1.9",
 	"author": "JacobLinCool <jacoblincool@gmail.com> (https://jacoblin.cool)",
 	"license": "MIT",
 	"keywords": [
@@ -33,6 +33,7 @@
 	},
 	"dependencies": {
 		"@gradio/client": "^1.0.0",
+		"commander": "^12.1.0",
 		"discord.js": "^14.0.0",
 		"dotenv": "^16.4.5"
 	},
