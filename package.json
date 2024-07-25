@@ -38,5 +38,5 @@
 		"url": "https://github.com/JacobLinCool/gradio-bot/issues"
 	},
 	"homepage": "https://jacoblincool.github.io/gradio-bot",
-	"packageManager": "pnpm@9.5.0"
+	"packageManager": "pnpm@9.6.0"
 }
