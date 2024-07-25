@@ -32,7 +32,7 @@
 		"build:docs": "typedoc --out docs src"
 	},
 	"dependencies": {
-		"@gradio/client": "^1.0.0",
+		"@gradio/client": "^1.4.0",
 		"commander": "^12.1.0",
 		"discord.js": "^14.0.0",
 		"dotenv": "^16.4.5"

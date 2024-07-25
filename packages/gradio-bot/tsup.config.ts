@@ -9,6 +9,4 @@ export default defineConfig(() => ({
 	clean: true,
 	splitting: false,
 	dts: true,
-	// bundle patched @gradio/client before https://github.com/gradio-app/gradio/issues/8819 is resolved
-	noExternal: ["@gradio/client"],
 }));
